@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace RandomHoppers
 {
@@ -22,8 +23,15 @@ namespace RandomHoppers
 
         static void Main(string[] args)
         {
-            ToCSV(Hop,"Hop",1000);
+            Stopwatch sw = new Stopwatch();
 
+            sw.Start();
+
+            ToCSV(Hop,"Hop",10000000);
+
+            sw.Stop();
+
+            Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds + " ms");
             //double average_hops = hops.Average();
 
             // take average of array
@@ -56,7 +64,7 @@ namespace RandomHoppers
 
             if (iterations > 1000000)
             {
-                columns = 1000000 / iterations;
+                columns = iterations / 1000000;
             }
             else columns = 1;
             // make it fit excel's 1m row limit
@@ -71,7 +79,7 @@ namespace RandomHoppers
                 // call the method specified when calling this method (ToCSV)
                 if ((i+1) % columns == 0)
                 {
-                    line = line + stat[i].ToString() + ", ";
+                    line = line + stat[i].ToString();  // since writing line, dont need final ","
                     file.WriteLine(line);
                     line = "";
                 }

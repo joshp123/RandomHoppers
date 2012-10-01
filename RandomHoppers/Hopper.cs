@@ -8,7 +8,8 @@ namespace RandomHoppers
     class Hopper
     {
         // Declaring instance of Random outside of the Hop() function, because:
-        // otherwise when calling Hop to create a new Random in close succession, they'll have the same system time as seed and thus will not be random.
+        // otherwise when calling Hop to create a new Random in close succession, they'll have the same system time as seed
+        // and thus will not be random.
         
         static Random rand = new Random();
 
@@ -34,11 +35,12 @@ namespace RandomHoppers
 
         static void ToCSV(Func<double> method, string method_str, int iterations)
         {
-            // Method to run another method a certain number of times, and spit out a CSV file based on whatever the method returns.
+            // Method to run another method a certain number of times, and spit out a CSV file based on whatever
+            // the method returns.
             // Use it to create statistics on, well, pretty much anything!
 
-            // Takes arguments method (must return a covariant of double. i.e. floats and ints are ok), that method as a string (this is purely for naming files),
-            // and the number of iterations to run it for.
+            // Takes arguments method (must return a covariant of double. i.e. floats and ints are ok), that
+            // method as a string (this is purely for naming files), and the number of iterations to run it for.
 
             // CSV file is excel compatible; starts off as a single column file until it hits excel 2013's row limit (~1m)
             
@@ -47,7 +49,8 @@ namespace RandomHoppers
             // Doing this as a .csv so statistics in excel are easy to manage
             
             string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
-            System.IO.StreamWriter file = new System.IO.StreamWriter("D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\" + method_str + "_" + iterations + "_" + timestamp + ".csv");
+            System.IO.StreamWriter file = new System.IO.StreamWriter("D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\" 
+                + method_str + "_" + iterations + "_" + timestamp + ".csv");
             
             int columns;
 

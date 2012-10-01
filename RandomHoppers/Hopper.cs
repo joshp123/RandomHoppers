@@ -105,9 +105,9 @@ namespace RandomHoppers
                 // print an X at the place the object is
                 else
                 {
-                    Console.Write("o");
+                    Console.Write("_");
                 }
-                // print O in empty location
+                // print _ in empty location
             }
             Console.WriteLine();
         }

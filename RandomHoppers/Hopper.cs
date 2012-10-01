@@ -32,6 +32,11 @@ namespace RandomHoppers
             sw.Stop();
 
             Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds + " ms");
+
+            // TODO: neaten timing
+
+            // TODO: make this a UI
+
             //double average_hops = hops.Average();
 
             // take average of array

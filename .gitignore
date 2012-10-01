@@ -8,6 +8,7 @@ Thumbs.db
 *.vspscc
 *_i.c
 *_p.c
+*.csv
 *.ncb
 *.suo
 *.sln.docstates

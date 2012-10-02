@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.IO;
 
 namespace RandomHoppers
 {
@@ -19,8 +20,7 @@ namespace RandomHoppers
             return rand.NextDouble();
         }
 
-
-
+        
         static void Main(string[] args)
         {
             Stopwatch sw = new Stopwatch();
@@ -31,11 +31,15 @@ namespace RandomHoppers
 
             sw.Stop();
 
-            Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds + " ms");
+            Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds / 1000 + " seconds");
 
             // TODO: neaten timing
 
+            // TODO: make this properly OO
+
             // TODO: make this a UI
+
+            // TODO: setup args so we can multi-test or single test or whatever i guess
 
             //double average_hops = hops.Average();
 
@@ -62,8 +66,24 @@ namespace RandomHoppers
             // Doing this as a .csv so statistics in excel are easy to manage
             
             string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
-            System.IO.StreamWriter file = new System.IO.StreamWriter("D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\" 
-                + method_str + "_" + iterations + "_" + timestamp + ".csv");
+            
+            // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
+
+            string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
+
+            try
+            {
+               if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
+               {
+                   savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\"; 
+               }
+            }
+            catch (Exception)
+            {
+                // fail silently
+            }
+
+            System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_str + "_" + iterations + "_" + timestamp + ".csv");
             
             int columns;
 

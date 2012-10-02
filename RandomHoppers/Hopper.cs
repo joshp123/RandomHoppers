@@ -25,6 +25,8 @@ namespace RandomHoppers
         {
             for (int i = 1; i < 9; i++)
                 // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
+                // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
+                // 
             {
                 Console.WriteLine("Testing a MultiHop of line length 50, probability 0.5, for 10^" + i + " iterations");
 

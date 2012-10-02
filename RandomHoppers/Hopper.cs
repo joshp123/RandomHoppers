@@ -33,10 +33,14 @@ namespace RandomHoppers
 
             //Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds / 1000 + " seconds");
 
-            Hop(50, 1000);
+            //for (double probability = 0; probability <= 1; probability+=0.1)
+            //{
+            //    Hop(10, 50, probability);
+            //}
 
-            // TODO: neaten timing
-
+            Tuple<double,double> average_and_stdev = Hop(10, 100, 0.5);
+            average =average_and_stdev.Item1
+            Console.WriteLine(average_hoppers);
             // TODO: make this properly OO
 
             // TODO: make this a UI
@@ -52,7 +56,7 @@ namespace RandomHoppers
             return;
         }
 
-        static void ToCSV(Func<double> method, string method_str, int iterations)
+        static void ToCSV(Func<int,int,double,Tuple<double,double>> method, string method_str, int iterations)
         {
             // Method to run another method a certain number of times, and spit out a CSV file based on whatever
             // the method returns.
@@ -124,31 +128,36 @@ namespace RandomHoppers
             // TODO: add averages here
         }
 
-        static double Hop(int length, int maxtime) // todo add args for L, T, maxT
+        static Tuple<double,double> Hop(int length, int maxtime, double probability)
         {
+            // returns average number of hoppers per line as double
+
             double time = 0; // time counter
 
             int[] line = new int[length];
 
-            PrintCurrentState(time, length, line);
+            // PrintCurrentState(time, length, line); // testing line only
 
             // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime);
+
+            int[] hopper_count = new int[maxtime]; // initiate array for getting average of hoppers
 
             // start hopper 1 off
 
             line[0] = 1;
 
-            while (time <= maxtime)
+            while (time < maxtime)
             {
                 time++;
                 // start of a run, increase time by 1 unit
-                
+                int current_hoppers = 0;               
                 for (int i = length-1; i >= 0; i--) // work backwards along the line
                 {
                     if (line[i] == 1)
                     {
+                        current_hoppers++;
                         // run hop routine
-                        if (GetNextDouble() > 0.5) // if coinflip works, hop
+                        if (probability > GetNextDouble()) // if coinflip works, hop
                         {
                             if (i == length-1)
                             {
@@ -174,16 +183,21 @@ namespace RandomHoppers
                     if (line[0] == 0)
                     {
                         line[0] = 1;
-
+                        current_hoppers++;
                         // add a new hopper if the first position is free
                     }
-                }
 
-                PrintCurrentState(time, length, line);
+
+
+
+                }
+                hopper_count[Convert.ToInt32(time) - 1] = current_hoppers;
+
+                // PrintCurrentState(time, length, line); // (only used for visually testing)
 
             }
-            // shouldn't reach here, so return -1
-            return -1;
+            Tuple<double,double> retval = <hopper_count.Average(); 
+            return hopper_count.Average();
         }
 
         static void PrintCurrentState(double time, int length, int[] line)
@@ -195,6 +209,7 @@ namespace RandomHoppers
             {
                 Console.Write(time + "\t");
             }
+            
             for (int i = 0; i < length; i++)
             {
                 if (line[i] == 1)

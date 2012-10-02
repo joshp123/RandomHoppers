@@ -33,7 +33,7 @@ namespace RandomHoppers
 
             //Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds / 1000 + " seconds");
 
-            Hop(50, 10);
+            Hop(50, 1000);
 
             // TODO: neaten timing
 
@@ -132,7 +132,7 @@ namespace RandomHoppers
 
             PrintCurrentState(time, length, line);
 
-            Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime);
+            // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime);
 
             // start hopper 1 off
 
@@ -142,13 +142,11 @@ namespace RandomHoppers
             {
                 time++;
                 // start of a run, increase time by 1 unit
-
-                for (int i = length-1 ; i == 0; i--) // work backwards along the line
+                
+                for (int i = length-1; i >= 0; i--) // work backwards along the line
                 {
-                    Console.WriteLine(i + "  " + line[i]);
                     if (line[i] == 1)
                     {
-                        Console.WriteLine("fart");
                         // run hop routine
                         if (GetNextDouble() > 0.5) // if coinflip works, hop
                         {
@@ -171,6 +169,13 @@ namespace RandomHoppers
                     else
                     {
                         // do nothing and move onto next hopper.
+                    }
+
+                    if (line[0] == 0)
+                    {
+                        line[0] = 1;
+
+                        // add a new hopper if the first position is free
                     }
                 }
 

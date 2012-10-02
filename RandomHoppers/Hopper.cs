@@ -23,15 +23,17 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            Stopwatch sw = new Stopwatch();
+            //Stopwatch sw = new Stopwatch();
 
-            sw.Start();
+            //sw.Start();
 
-            ToCSV(Hop,"Hop",10000000);
+            //ToCSV(Hop,"Hop",10000000);
 
-            sw.Stop();
+            //sw.Stop();
 
-            Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds / 1000 + " seconds");
+            //Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds / 1000 + " seconds");
+
+            Hop(50, 10);
 
             // TODO: neaten timing
 
@@ -122,40 +124,64 @@ namespace RandomHoppers
             // TODO: add averages here
         }
 
-        static double Hop()
+        static double Hop(int length, int maxtime) // todo add args for L, T, maxT
         {
-            int length = 50; // length of line to hop
-            int pos = 1; // position, x 
             double time = 0; // time counter
 
-            // PrintCurrentState(time, length, pos);
+            int[] line = new int[length];
 
-            while (pos <= length)
+            PrintCurrentState(time, length, line);
+
+            Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime);
+
+            // start hopper 1 off
+
+            line[0] = 1;
+
+            while (time <= maxtime)
             {
                 time++;
-                // start of a "hop", increase time by 1 unit
+                // start of a run, increase time by 1 unit
 
-                // flip coin to see if you hop
-                if (GetNextDouble() > 0.5)
-                    pos++;
-
-                // PrintCurrentState(time, length, pos);
-                // print what it looks like now
-                // nb this is after first hop
-
-
-                if (pos == length)
+                for (int i = length-1 ; i == 0; i--) // work backwards along the line
                 {
-                    // Console.WriteLine("End of line reached. It took " + time + " hops to reach the end of the line of length " + length);
-                    return time; // return number of hops taken to reach end of line
-                    // break out here, when the position reaches length
+                    Console.WriteLine(i + "  " + line[i]);
+                    if (line[i] == 1)
+                    {
+                        Console.WriteLine("fart");
+                        // run hop routine
+                        if (GetNextDouble() > 0.5) // if coinflip works, hop
+                        {
+                            if (i == length-1)
+                            {
+                                //take it off the end of the line
+                                line[i] = 0;
+                            }
+                            else // normal hop
+                            {
+                                if (line[i + 1] == 0) // if next space is free, hop!
+                                {
+                                    line[i] = 0;
+                                    line[i + 1] = 1;
+                                    // hop!
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // do nothing and move onto next hopper.
+                    }
                 }
+
+                PrintCurrentState(time, length, line);
+
             }
             // shouldn't reach here, so return -1
             return -1;
         }
 
-        static void PrintCurrentState(int time, int length, int pos)
+        static void PrintCurrentState(double time, int length, int[] line)
         {
 
             if (time == 0)
@@ -164,11 +190,11 @@ namespace RandomHoppers
             {
                 Console.Write(time + "\t");
             }
-            for (int i = 1; i <= length; i++)
+            for (int i = 0; i < length; i++)
             {
-                if (i == pos)
+                if (line[i] == 1)
                     Console.Write("X");
-                // print an X at the place the object is
+                // print an X if a hopper exists at this location
                 else
                 {
                     Console.Write("_");

@@ -23,7 +23,7 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            for (int i = 1; i < 9; i++)
+            for (double i = 6; i < 8.5; i+=0.5)
                 // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
                 // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
                 // 
@@ -285,6 +285,9 @@ namespace RandomHoppers
             }
 
             // get average hoppers per line between t=0 and t=maxtime, and standard deviation of this
+
+            // interestingly the language implementations of .Average(); and this stdeviation calculation are fast as hell and
+            // add almost nothing to the length of time to iterate over 10^8 time units (in the order of <1%)
             double average = hopper_count.Average();
             double sumOfSquaresOfDifferences = hopper_count.Select(val => (val - average) * (val - average)).Sum();
             double stdev = Math.Sqrt(sumOfSquaresOfDifferences / hopper_count.Length); 
@@ -293,8 +296,7 @@ namespace RandomHoppers
             
         }
 
-        static double SingleHop(int length, double probability)
-        {
+        static double SingleHop(int length, double probability){
             int pos = 1; // position, x 
             double time = 0; // time counter
 

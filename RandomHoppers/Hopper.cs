@@ -25,14 +25,12 @@ namespace RandomHoppers
         {
             LoopOverPowersOfTen(1,2,1,0.5);
 
-            // TODO: turn this into another overloaded ToCSV method 
-
             // TODO: make this properly OO
 
             // TODO: make this a UI
 
-            // TODO: setup args so we can multi-test or single test or whatever i guess
-                                 
+            // TODO: document all functions properly. lmao this wont be fun
+                                
             return;
         }
 
@@ -94,7 +92,7 @@ namespace RandomHoppers
             }
         }
 
-        static void ToCSV(Func<int,int,double> method, int arg1, int arg2, string method_str, int iterations)
+        private static void ToCSV(Func<int,int,double> method, int arg1, int arg2, string method_str, int iterations)
         {
             // Method to run another method a certain number of times, and spit out a CSV file based on whatever
             // the method returns.
@@ -165,7 +163,7 @@ namespace RandomHoppers
 
         }
 
-        static void ToCSV(Func<int,int,int,Tuple<double,double>> method, int arg1, int arg2, int arg3, string method_str, string header1, string header2, int iterations)
+        private static void ToCSV(Func<int,int,int,Tuple<double,double>> method, int arg1, int arg2, int arg3, string method_str, string header1, string header2, int iterations)
         {
              /*
               *

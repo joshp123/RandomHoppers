@@ -23,10 +23,25 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            for (double i = 6; i < 8.5; i+=0.5)
-                // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
-                // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
-                // 
+            LoopOverPowersOfTen(1,2,1);
+
+            // TODO: turn this into another overloaded ToCSV method 
+
+            // TODO: make this properly OO
+
+            // TODO: make this a UI
+
+            // TODO: setup args so we can multi-test or single test or whatever i guess
+                                 
+            return;
+        }
+
+        private static void LoopOverPowersOfTen(int min, int max, float interval)
+        {
+            for (double i = min; i < max; i += interval)
+            // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
+            // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
+            // 
             {
                 Console.WriteLine("Testing a MultiHop of line length 50, probability 0.5, for 10^" + i + " iterations");
 
@@ -53,16 +68,6 @@ namespace RandomHoppers
 
                 sw.Stop();
             }
-
-            // TODO: turn this into another overloaded ToCSV method 
-
-            // TODO: make this properly OO
-
-            // TODO: make this a UI
-
-            // TODO: setup args so we can multi-test or single test or whatever i guess
-                                 
-            return;
         }
 
         static void ToCSV(Func<int,int,double> method, int arg1, int arg2, string method_str, int iterations)
@@ -231,7 +236,11 @@ namespace RandomHoppers
 
             // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime); // testing line only
 
-            int[] hopper_count = new int[maxtime]; // initiate array for getting average of hoppers
+            int[] hopper_count = new int[maxtime];
+            // initiate array for getting average of hoppers
+            
+            int[] average_travel_time = new int[maxtime];
+            // initiate array with size maxtime, as even if one hopper is added for every unit of time, the amount of hoppers in existence ever will never be more than maxtime
 
             // start hopper 1 off
             line[0] = 1;
@@ -243,16 +252,20 @@ namespace RandomHoppers
                 int current_hoppers = 0;               
                 for (int i = length-1; i >= 0; i--) // work backwards along the line
                 {
-                    if (line[i] == 1)
+                    if (line[i] != 0) // using != 0 so we can distinguish between hoppers
                     {
                         current_hoppers++;
+                        average_travel_time[line[i]-1] ++;
+                        // using line[i] as an array index, i.e. first hopper is represented as "1", second "2" in the array. When it hits a number (e.g. "2"), increment travel time by one
+                        
                         // run hop routine
                         if (probability > GetNextDouble()) // if coinflip works, hop
                         {
                             if (i == length-1)
                             {
                                 // take it off the end of the line if we're there
-                                line[i] = 0;
+                                line[i] = 0;                               
+
                             }
                             else // normal hop
                             {
@@ -271,10 +284,12 @@ namespace RandomHoppers
                     }
 
                     if (line[0] == 0)
+                    // add a new hopper if the first position is free
                     {
-                        line[0] = 1;
+                        // figure out what number to stick on the line
+                        line[0] = average_travel_time.Count() + 1;
                         current_hoppers++;
-                        // add a new hopper if the first position is free
+                        
                     }
 
                 }
@@ -339,9 +354,9 @@ namespace RandomHoppers
             
             for (int i = 0; i < length; i++)
             {
-                if (line[i] == 1)
-                    Console.Write("X");
-                // print an X if a hopper exists at this location
+                if (line[i] != 0)
+                    Console.Write(" " + line[i] + " ");
+                // print hopper value if a hopper exists at this location (its gonna be numbered for multihoppers, 1 for singlehopper. i could distinguish but effort)
                 else
                 {
                     Console.Write("_");

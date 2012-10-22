@@ -23,7 +23,7 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            LoopOverPowersOfTen(1,1,1,0.5);
+            LoopOverPowersOfTen(2,2,1,0.9);
 
             // TODO: make this properly OO
 
@@ -261,11 +261,12 @@ namespace RandomHoppers
             int[] hopper_count = new int[maxtime];
             // initiate array for getting average of hoppers
             
-            int[] average_travel_time = new int[maxtime];
+            int[] travel_time = new int[maxtime];
             // initiate array with size maxtime, as even if one hopper is added for every unit of time, the amount of hoppers in existence ever will never be more than maxtime
 
             // start hopper 1 off
             line[0] = 1;
+            int unique_hoppers = 1;
 
             while (time < maxtime)
             {
@@ -277,11 +278,11 @@ namespace RandomHoppers
                     if (line[i] != 0) // using != 0 so we can distinguish between hoppers
                     {
                         current_hoppers++;
-                        average_travel_time[line[i]-1] ++;
+                        travel_time[line[i]-1] ++;
                         // using line[i] as an array index, i.e. first hopper is represented as "1", second "2" in the array. When it hits a number (e.g. "2"), increment travel time by one
                         
                         // run hop routine
-                        if (probability > GetNextDouble()) // if coinflip works, hop
+                        if (probability > GetNextDouble()) // if coinflip works, hop!
                         {
                             if (i == length-1)
                             {
@@ -293,8 +294,9 @@ namespace RandomHoppers
                             {
                                 if (line[i + 1] == 0) // if next space is free, hop!
                                 {
+                                    line[i + 1] = line[i];
+                                    // change the variable first before we blank it otherwise we lose track of what it is!
                                     line[i] = 0;
-                                    line[i + 1] = 1;
                                     // hop!
                                 }
                             }
@@ -309,7 +311,11 @@ namespace RandomHoppers
                     // add a new hopper if the first position is free
                     {
                         // figure out what number to stick on the line
-                        line[0] = average_travel_time.Count() + 1;
+                        unique_hoppers++;
+                        line[0] = unique_hoppers;
+                        // incrementing a counter here is probably more efficent than searching the travel time array to figure out how many non-zero elements there are
+
+                        // count non-zero array elements
                         current_hoppers++;
                         
                     }
@@ -321,11 +327,22 @@ namespace RandomHoppers
 
             }
 
+            // now that we have finished looping, take the minimum number from the line (counter always incremments), so we can disregard all values greater than 
+            // line[line.Max()] from our average travel time calculations (as they haven't finished hopping)
+
+            // this is wrong var valid_times = new ArraySegment<int>(travel_time, 0, line.Min() - 2);
+            Console.WriteLine(line.Min());
+            foreach(int i in travel_time.Take(line.Min(j => j != 0)))
+                Console.WriteLine(i);
+            double average_travel_time = travel_time.Take(line.Min() - 1).Average();
+
+                        
+
             // get average hoppers per line between t=0 and t=maxtime, and standard deviation of this
 
             // interestingly the language implementations of .Average(); and this stdeviation calculation are fast as hell and
             // add almost nothing to the length of time to iterate over 10^8 time units (in the order of <1%)
-            Console.WriteLine("Average travel time = " + average_travel_time.Average());
+
 
             double average = hopper_count.Average();
             double sumOfSquaresOfDifferences = hopper_count.Select(val => (val - average) * (val - average)).Sum();
@@ -379,7 +396,7 @@ namespace RandomHoppers
             for (int i = 0; i < length; i++)
             {
                 if (line[i] != 0)
-                    Console.Write(" " + line[i] + " ");
+                    Console.Write(line[i]);
                 // print hopper value if a hopper exists at this location (its gonna be numbered for multihoppers, 1 for singlehopper. i could distinguish but effort)
                 else
                 {

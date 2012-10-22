@@ -23,7 +23,7 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            LoopOverPowersOfTen(1,2,1);
+            LoopOverPowersOfTen(1,2,1,0.5);
 
             // TODO: turn this into another overloaded ToCSV method 
 
@@ -36,29 +36,53 @@ namespace RandomHoppers
             return;
         }
 
-        private static void LoopOverPowersOfTen(int min, int max, float interval)
+        private static void LoopOverPowersOfTen(int min, int max, double interval, double probability)
         {
-            for (double i = min; i < max; i += interval)
-            // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
-            // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
-            // 
+            for (double i = min; i == max; i += interval)
             {
                 Console.WriteLine("Testing a MultiHop of line length 50, probability 0.5, for 10^" + i + " iterations");
+
+                if (i >= 9)
+                // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
+                // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
+                {
+                    Console.WriteLine("Iteration size is too large and will overflow the memory. Stopping");
+                    break;
+                }
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                //ToCSV(Hop,"Hop",10000000);
+                Tuple<double, double> average_and_stdev = MultiHop(50, Convert.ToInt32(Math.Pow(10, i)), probability);
+                double average = average_and_stdev.Item1;
+                double stdev = average_and_stdev.Item2;
 
+                Console.WriteLine("Average = " + average);
+                Console.WriteLine("Standard deviation = " + stdev);
+                Console.WriteLine("This took: " + sw.ElapsedMilliseconds + " milliseconds\n");
 
-                //Console.WriteLine("10000000 iterations took: " + sw.ElapsedMilliseconds / 1000 + " seconds");
+                sw.Stop();
+            }
+        }
 
-                //for (double probability = 0; probability <= 1; probability+=0.1)
-                //{
-                //    Hop(10, 50, probability);
-                //}
+        private static void LoopOverProbabilities(int min, int max, double interval, int iterations)
+        {
+            for (double i = min; i < max; i += interval)
+            {
+                Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for 10^" + iterations + " iterations");
 
-                Tuple<double, double> average_and_stdev = MultiHop(50, Convert.ToInt32(Math.Pow(10, i)), 0.5);
+                if (iterations >= 100000000)
+                // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
+                // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
+                {
+                    Console.WriteLine("Iteration size is too large and will overflow the memory. Stopping");
+                    break;
+                }
+
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                Tuple<double, double> average_and_stdev = MultiHop(50, iterations, i);
                 double average = average_and_stdev.Item1;
                 double stdev = average_and_stdev.Item2;
 
@@ -232,7 +256,7 @@ namespace RandomHoppers
             int time = 0; // time counter
             int[] line = new int[length]; // initiate the line array
 
-            // PrintCurrentState(time, length, line); // testing line only
+            PrintCurrentState(time, length, line); // testing line only
 
             // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime); // testing line only
 
@@ -295,7 +319,7 @@ namespace RandomHoppers
                 }
                 hopper_count[time - 1] = current_hoppers;
 
-                // PrintCurrentState(time, length, line); // (only used for visually testing)
+                PrintCurrentState(time, length, line); // (only used for visually testing)
 
             }
 
@@ -303,6 +327,8 @@ namespace RandomHoppers
 
             // interestingly the language implementations of .Average(); and this stdeviation calculation are fast as hell and
             // add almost nothing to the length of time to iterate over 10^8 time units (in the order of <1%)
+            Console.WriteLine("Average travel time = " + average_travel_time.Average());
+
             double average = hopper_count.Average();
             double sumOfSquaresOfDifferences = hopper_count.Select(val => (val - average) * (val - average)).Sum();
             double stdev = Math.Sqrt(sumOfSquaresOfDifferences / hopper_count.Length); 

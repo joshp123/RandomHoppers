@@ -23,7 +23,7 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            LoopOverPowersOfTen(1,2,1,0.5);
+            LoopOverPowersOfTen(1,1,1,0.5);
 
             // TODO: make this properly OO
 

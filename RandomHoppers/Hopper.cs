@@ -376,13 +376,18 @@ namespace RandomHoppers
             // interestingly the language implementations of .Average(); and this stdeviation calculation are fast as hell and
             // add almost nothing to the length of time to iterate over 10^8 time units (in the order of <1%)
 
+            Tuple<double, double> array_stats = AverageAndStdevOfArray(hopper_count);
 
+            return new Tuple<double, double, double>(array_stats.Item1, array_stats.Item2, average_travel_time);
+            
+        }
+
+        private static Tuple<double, double> AverageAndStdevOfArray(int[] hopper_count)
+        {
             double average = hopper_count.Average();
             double sumOfSquaresOfDifferences = hopper_count.Select(val => (val - average) * (val - average)).Sum();
-            double stdev = Math.Sqrt(sumOfSquaresOfDifferences / hopper_count.Length); 
-
-            return new Tuple<double,double,double>(average,stdev,average_travel_time);
-            
+            double stdev = Math.Sqrt(sumOfSquaresOfDifferences / hopper_count.Length);
+            return new Tuple<double, double>(average, stdev);
         }
 
         private static int MinNonZeroOfArray(int[] line)
@@ -403,9 +408,23 @@ namespace RandomHoppers
             return -1;
         }
 
-        static double SingleHop(int length, double probability){
+        static Tuple<double, double> SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
+        {
+            int iterations = Convert.ToInt32(Math.Pow(10, iterations_as_power_of_10));
+            int[] times = new int[iterations];
+
+            for (int i = 0; i < iterations; i++)
+            {
+                times[i] = SingleHop(length, probability);
+            }
+            
+            return AverageAndStdevOfArray(times);
+
+        }
+
+        static int SingleHop(int length, double probability){
             int pos = 1; // position, x 
-            double time = 0; // time counter
+            int time = 0; // time counter
 
             // PrintCurrentState(time, length, pos);
 

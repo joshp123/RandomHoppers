@@ -23,12 +23,23 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            SingleHop(50, 0.5);
-            //LoopOverProbabilities(0.05, 1.00, 0.05, 10000);
+            JaggedArrayToConsole(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
             
             // TODO: document all functions properyl. lmao this wont be fun
                                 
             return;
+        }
+
+        private static void JaggedArrayToConsole(string[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                for (int j = 0; j < array[i].Length; j++)
+                {
+                    Console.Write(array[i][j] + "\t\t");
+                }
+                Console.WriteLine();
+            }
         }
 
         private static string[][] LoopOverPowersOfTen(int min, int max, double interval, double probability)
@@ -85,7 +96,7 @@ namespace RandomHoppers
                 throw new ArgumentOutOfRangeException("Probability out of range");
             }
             
-            int loops = Convert.ToInt32((max - min) / interval);
+            int loops = Convert.ToInt32((max - min) / interval) + 1;
             string[][] retval = new string[loops + 1][];
             int iteration = 0;
             retval[0] = new string[] { "Probability", "Average hoppers on line", "Standard deviation", "Average travel time", "Time taken to Calculate (ms)" };
@@ -120,9 +131,9 @@ namespace RandomHoppers
             return retval;
         }
 
-        static string[][] SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
+        private static string[][] SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
         {
-            // TODO: update this to 
+            // TODO: update this to loop similarly to LoopOverPowers of 10 for a nice graph or something
             int iterations = Convert.ToInt32(Math.Pow(10, iterations_as_power_of_10));
             int[] times = new int[iterations];
 

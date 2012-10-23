@@ -23,6 +23,7 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
+            JaggedArrayToConsole(SingleHopLoop(1, 8, 50, 0.5, 0.5));
             JaggedArrayToConsole(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
             
             // TODO: document all functions properyl. lmao this wont be fun
@@ -59,7 +60,7 @@ namespace RandomHoppers
                 if (!(0 <= probability && probability <= 1))
                 {
                     Console.WriteLine("Probability is not valid (between 0 and 1). Stopping");
-                    break;
+                    throw new ArgumentOutOfRangeException("Probability out of range");
                 }
 
                 // should probably re-do this with exceptions but that would probably just complicate the codebase tbh
@@ -133,20 +134,37 @@ namespace RandomHoppers
             return retval;
         }
 
-        private static string[][] SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
+        private static string[][] SingleHopLoop(int min, int max, int length, double interval, double probability)
         {
-            // TODO: update this to loop similarly to LoopOverPowers of 10 for a nice graph or something
-            int iterations = Convert.ToInt32(Math.Pow(10, iterations_as_power_of_10));
-            int[] times = new int[iterations];
-
-            for (int i = 0; i < iterations; i++)
-            {
-                times[i] = SingleHop(length, probability);
-            }
-            Tuple<double, double> stats = AverageAndStdevOfArray(times);
-
-            string[][] retval = { new string[] { "Iterations" , "Average travel time", "Standard Deviation" }, new string[] { iterations.ToString(), stats.Item1.ToString(), stats.Item2.ToString() } };
+            // this should loop over powers of 10 to illustrate how the averages converge
+            int loops = Convert.ToInt32((max - min) / interval) + 1;
+            string[][] retval = new string[loops + 2][];
+            retval[0] = new string[] { "Running a loop on a single hopper to illustrate how averages converge as iterations increase. Line length = " + "length" + " ; Probability = " + probability };
+            retval[1] = new string[] { "Iterations" , "Average travel time", "Standard Deviation" , "Time Taken (ms)" };
             // construct the array to return
+
+            int iteration = 0;
+
+            for (double i = min; i < (max + interval); i+= interval)
+			{
+			    iteration++;
+                // use iteration variable to track instead of i because it's a little bit more lightweight (as i is a power of ten)
+
+                int repeats = Convert.ToInt32(Math.Pow(10,i));
+                int[] times = new int[repeats];
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                for (int j = 0; j < repeats; j++)
+                {
+                    times[j] = SingleHop(length, probability);
+                }
+                Tuple<double, double> stats = AverageAndStdevOfArray(times);
+                sw.Stop();
+                retval[iteration + 1] = new string[] { repeats.ToString(), stats.Item1.ToString(), stats.Item2.ToString(), sw.ElapsedMilliseconds.ToString() };
+                // add to the array to return
+            }
+            
             return retval;
         }
 
@@ -221,62 +239,62 @@ namespace RandomHoppers
 
         }
 
-        private static void JaggedArrayToCSV(string[][] array)
-        {
+        //private static void JaggedArrayToCSV(string[][] array)
+        //{
 
-            // Create a file to list our number of stat
-            // Doing this as a .csv so statistics in excel are easy to manage
+        //    // Create a file to list our number of stat
+        //    // Doing this as a .csv so statistics in excel are easy to manage
 
-            string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
+        //    string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
 
-            // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
+        //    // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
 
-            string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
+        //    string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
 
-            try
-            {
-                if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
-                {
-                    savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\";
-                }
-            }
-            catch (Exception)
-            {
-                // fail silently
-            }
+        //    try
+        //    {
+        //        if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
+        //        {
+        //            savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\";
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        // fail silently
+        //    }
             
-            // TODO: parse array[0] as a save path
-            System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_str + "_" + iterations + "_" + timestamp + ".csv");
+        //    // TODO: parse array[0] as a save path
+        //    System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_str + "_" + iterations + "_" + timestamp + ".csv");
 
-            if (array.Length > 1000000)
-            {
-                // fix this with exceptions
-                Console.WriteLine("Your table is too damn big! (and will overflow excel. Use less than 1m loops");
-                return;
-            }
+        //    if (array.Length > 1000000)
+        //    {
+        //        // fix this with exceptions
+        //        Console.WriteLine("Your table is too damn big! (and will overflow excel. Use less than 1m loops");
+        //        return;
+        //    }
 
-            for (int i = 0; i < array.Length; i++)
-            {
-                string line = "";
-                for (int j = 0; j < array[i].Length; j++)
-                {
-                    if (j == (array[i].Length - 1))
-                    {
-                        line = line + array[i][j];
-                        // don't add an extra column on the final thing per line
-                    }
-                    else
-                        line = line + array[i][j] + ",";
-                }
-                file.WriteLine(line);
-            }
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        string line = "";
+        //        for (int j = 0; j < array[i].Length; j++)
+        //        {
+        //            if (j == (array[i].Length - 1))
+        //            {
+        //                line = line + array[i][j];
+        //                // don't add an extra column on the final thing per line
+        //            }
+        //            else
+        //                line = line + array[i][j] + ",";
+        //        }
+        //        file.WriteLine(line);
+        //    }
 
-            file.Close();
-            // dont forget to close the file!
+        //    file.Close();
+        //    // dont forget to close the file!
 
-            return;
+        //    return;
 
-        }
+        //}
 
         static Tuple<double,double,double> MultiHop(int length, int maxtime, double probability)
         {

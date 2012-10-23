@@ -408,7 +408,7 @@ namespace RandomHoppers
             return -1;
         }
 
-        static Tuple<double, double> SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
+        static string[,] SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
         {
             int iterations = Convert.ToInt32(Math.Pow(10, iterations_as_power_of_10));
             int[] times = new int[iterations];
@@ -417,9 +417,10 @@ namespace RandomHoppers
             {
                 times[i] = SingleHop(length, probability);
             }
-            
-            return AverageAndStdevOfArray(times);
+            Tuple<double, double> stats = AverageAndStdevOfArray(times);
 
+            string[,] retval = { { "Average travel time", "Standard Deviation"} , { stats.Item1.ToString(), stats.Item2.ToString() } };
+            return retval;
         }
 
         static int SingleHop(int length, double probability){

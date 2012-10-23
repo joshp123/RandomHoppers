@@ -45,9 +45,10 @@ namespace RandomHoppers
         private static string[][] LoopOverPowersOfTen(int min, int max, double interval, double probability)
         {
             int loops = Convert.ToInt32((max - min) / interval);
-            string[][] retval  = new string[loops+1][];
+            string[][] retval  = new string[loops + 2][];
             int iteration = 0;
-            retval[0] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" , "Average travel time" , "Time taken to Calculate (ms)" };
+            retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max + " with probability " + probability };
+            retval[1] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" , "Average travel time" , "Time taken to Calculate (ms)" };
 
             // this code handles creating the array to return
             // basically it returns a big ass table
@@ -97,9 +98,10 @@ namespace RandomHoppers
             }
             
             int loops = Convert.ToInt32((max - min) / interval) + 1;
-            string[][] retval = new string[loops + 1][];
+            string[][] retval = new string[loops + 2][];
             int iteration = 0;
-            retval[0] = new string[] { "Probability", "Average hoppers on line", "Standard deviation", "Average travel time", "Time taken to Calculate (ms)" };
+            retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max + " over " + iterations + " iterations" };
+            retval[1] = new string[] { "Probability", "Average hoppers on line", "Standard deviation", "Average travel time", "Time taken to Calculate (ms)" };
 
             for (double i = min; i < (max + interval); i += interval)
             {

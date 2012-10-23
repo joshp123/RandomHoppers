@@ -23,22 +23,27 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            //LoopOverPowersOfTen(3, 5, 1, 0.5);
+            SingleHop(50, 0.5);
             //LoopOverProbabilities(0.05, 1.00, 0.05, 10000);
             
-            // TODO: make this properly OO
-
-            // TODO: make this a UI
-
-            // TODO: document all functions properly. lmao this wont be fun
+            // TODO: document all functions properyl. lmao this wont be fun
                                 
             return;
         }
 
-        private static void LoopOverPowersOfTen(int min, int max, double interval, double probability)
+        private static string[][] LoopOverPowersOfTen(int min, int max, double interval, double probability)
         {
-            for (double i = min; i < max + interval; i += interval)
+            int loops = Convert.ToInt32((max - min) / interval);
+            string[][] retval  = new string[loops+1][];
+            int iteration = 0;
+            retval[0] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" , "Average travel time" , "Time taken to Calculate (ms)" };
+
+            // this code handles creating the array to return
+            // basically it returns a big ass table
+
+            for (double i = min; i < (max + interval); i += interval)
             {
+                iteration++;
                 if (!(0 <= probability && probability <= 1))
                 {
                     Console.WriteLine("Probability is not valid (between 0 and 1). Stopping");
@@ -64,33 +69,33 @@ namespace RandomHoppers
                 double average = stats.Item1;
                 double stdev = stats.Item2;
                 double average_travel_time = stats.Item3;
-                
-                Console.WriteLine("Hoppers per line stats:");
-                Console.WriteLine("Average = " + average);
-                Console.WriteLine("Standard deviation = " + stdev);
-                Console.WriteLine("\nAverage Travel Time = " + average_travel_time);
-                Console.WriteLine("This took: " + sw.ElapsedMilliseconds + " milliseconds\n");
 
                 sw.Stop();
+
+                retval[iteration] = new string[] { Math.Pow(10, i).ToString(), average.ToString(), stdev.ToString(), average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
             }
+            return retval;
         }
 
-        private static void LoopOverProbabilities(double min, double max, double interval, int iterations)
+        private static string[][] LoopOverProbabilities(double min, double max, double interval, int iterations)
         {
-            if (min < 0)
+            if (min < 0  || max > 1)
             {
                 Console.WriteLine("Probability out of range. Terminating");
-                return;
-            }
-            else if (max > 1)
-            {
-                Console.WriteLine("Probability out of range. Terminating");
-                return;
+                throw new ArgumentOutOfRangeException("Probability out of range");
             }
             
-            for (double i = min; i < max + interval; i += interval)
+            int loops = Convert.ToInt32((max - min) / interval);
+            string[][] retval = new string[loops + 1][];
+            int iteration = 0;
+            retval[0] = new string[] { "Probability", "Average hoppers on line", "Standard deviation", "Average travel time", "Time taken to Calculate (ms)" };
+
+            for (double i = min; i < (max + interval); i += interval)
             {
                 Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for " + iterations + " iterations");
+                iteration++; 
+                // this is the array counter variable counting which loop we are on
+                // not to be confused with the length of time we are calling the multihop for. which is technically maxtime. i could change this but effort
 
                 if (iterations >= 100000000)
                 // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
@@ -108,14 +113,28 @@ namespace RandomHoppers
                 double stdev = stats.Item2;
                 double average_travel_time = stats.Item3;
 
-                Console.WriteLine("Hoppers per line stats:");
-                Console.WriteLine("Average = " + average);
-                Console.WriteLine("Standard deviation = " + stdev);
-                Console.WriteLine("\nAverage Travel Time = " + average_travel_time);
-                Console.WriteLine("This took: " + sw.ElapsedMilliseconds + " milliseconds\n");
-
                 sw.Stop();
+
+                retval[iteration] = new string[] { i.ToString(), average.ToString(), stdev.ToString(), average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
             }
+            return retval;
+        }
+
+        static string[][] SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
+        {
+            // TODO: update this to 
+            int iterations = Convert.ToInt32(Math.Pow(10, iterations_as_power_of_10));
+            int[] times = new int[iterations];
+
+            for (int i = 0; i < iterations; i++)
+            {
+                times[i] = SingleHop(length, probability);
+            }
+            Tuple<double, double> stats = AverageAndStdevOfArray(times);
+
+            string[][] retval = { new string[] { "Iterations" , "Average travel time", "Standard Deviation" }, new string[] { iterations.ToString(), stats.Item1.ToString(), stats.Item2.ToString() } };
+            // construct the array to return
+            return retval;
         }
 
         private static void ToCSV(Func<int,int,double> method, int arg1, int arg2, string method_str, int iterations)
@@ -408,21 +427,6 @@ namespace RandomHoppers
             return -1;
         }
 
-        static string[,] SingleHopLoop(int length, double probability, int iterations_as_power_of_10)
-        {
-            int iterations = Convert.ToInt32(Math.Pow(10, iterations_as_power_of_10));
-            int[] times = new int[iterations];
-
-            for (int i = 0; i < iterations; i++)
-            {
-                times[i] = SingleHop(length, probability);
-            }
-            Tuple<double, double> stats = AverageAndStdevOfArray(times);
-
-            string[,] retval = { { "Average travel time", "Standard Deviation"} , { stats.Item1.ToString(), stats.Item2.ToString() } };
-            return retval;
-        }
-
         static int SingleHop(int length, double probability){
             int pos = 1; // position, x 
             int time = 0; // time counter
@@ -438,7 +442,7 @@ namespace RandomHoppers
                 if (GetNextDouble() > 0.5)
                     pos++;
 
-                // PrintCurrentState(time, length, pos);
+                // PrintCurrentState(time, length, pos); // this is broken since i changed it to use arrays for MultiHop and there's really no point changing
                 // print what it looks like now
                 // nb this is after first hop
 

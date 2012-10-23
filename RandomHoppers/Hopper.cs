@@ -23,8 +23,8 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            LoopOverPowersOfTen(3, 5, 1, 0.5);
-            LoopOverProbabilities(0.05, 1.00, 0.05, 10000);
+            //LoopOverPowersOfTen(3, 5, 1, 0.5);
+            //LoopOverProbabilities(0.05, 1.00, 0.05, 10000);
             
             // TODO: make this properly OO
 

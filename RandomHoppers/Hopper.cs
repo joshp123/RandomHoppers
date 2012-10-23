@@ -36,7 +36,7 @@ namespace RandomHoppers
             {
                 for (int j = 0; j < array[i].Length; j++)
                 {
-                    Console.Write(array[i][j] + "\t\t");
+                    Console.Write(array[i][j] + "\t");
                 }
                 Console.WriteLine();
             }
@@ -343,7 +343,8 @@ namespace RandomHoppers
                             if (i == length-1)
                             {
                                 // take it off the end of the line if we're there
-                                line[i] = 0;                               
+                                line[i] = 0;
+                                current_hoppers--;
 
                             }
                             else // normal hop

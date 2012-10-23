@@ -221,26 +221,8 @@ namespace RandomHoppers
 
         }
 
-        private static void ToCSV(Func<int,int,int,Tuple<double,double>> method, int arg1, int arg2, int arg3, string method_str, string header1, string header2, int iterations)
+        private static void JaggedArrayToCSV(string[][] array)
         {
-             /*
-              *
-              *  Same as the previous function but overloaded version for the multihopper method
-              *  
-              *  Method to run another method a certain number of times, and spit out a CSV file based on whatever
-              *  the method returns.
-              *  Use it to create statistics on, well, pretty much anything!
-              *
-              *  Takes arguments method with , that
-              *  method as a string (this is purely for naming files), and the number of iterations to run it for.
-              *  
-              *  Don't call this for more than 1m iterations because then i'll have to implement columns of columns 
-              *  and that would be a bit complicated. tia 
-              * 
-              *  Header1 and Header2 are names of the return values of the function "method". e.g. "Average" and "Standard Deviation"
-              *  This is only used for writing to the CSV so you can really do whatever you like with it
-              */
-
 
             // Create a file to list our number of stat
             // Doing this as a .csv so statistics in excel are easy to manage
@@ -262,41 +244,32 @@ namespace RandomHoppers
             {
                 // fail silently
             }
-
+            
+            // TODO: parse array[0] as a save path
             System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_str + "_" + iterations + "_" + timestamp + ".csv");
 
-            if (iterations > 1000000)
+            if (array.Length > 1000000)
             {
                 // fix this with exceptions
-                Console.WriteLine("Using > 1m iterations with multiple statistics is not supported. Please decrease the number of iterations!");
+                Console.WriteLine("Your table is too damn big! (and will overflow excel. Use less than 1m loops");
                 return;
             }
-            // don't create a multicolumn spreadsheet
 
-            // Create an array for the statistic; using doubles incase we want to take an average of it
-
-            Tuple<double,double>[] stat = new Tuple<double,double>[iterations];
-            string line = "";
-            file.WriteLine(header1 + ", " + header2);
-            // write header row
-
-            for (int i = 0; i < iterations; i++)
+            for (int i = 0; i < array.Length; i++)
             {
-                stat[i] = method(arg1, arg2, arg3); // sort columns in this overloaded method
-                // call the method specified when calling this method (ToCSV)
-
-                file.WriteLine(stat[i].Item1 + ", " + stat[i].Item2);
-                // write each element of the tuple to a separate column
-
-                // it would be pro if you could use foreach on tuples but apparently you can't so welp
-                // not that it would save much time since you'd have to overload this function anyway
-                // if you were feeding it methods that return N-item tuples
-            }
-
-            if (line != "")
+                string line = "";
+                for (int j = 0; j < array[i].Length; j++)
+                {
+                    if (j == (array[i].Length - 1))
+                    {
+                        line = line + array[i][j];
+                        // don't add an extra column on the final thing per line
+                    }
+                    else
+                        line = line + array[i][j] + ",";
+                }
                 file.WriteLine(line);
-
-            // if it ended on i = 999 and line is not blank or whatever write the residual bit
+            }
 
             file.Close();
             // dont forget to close the file!

@@ -23,7 +23,7 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            JaggedArrayToConsole(SingleHopLoop(1, 8, 50, 0.5, 0.5));
+            JaggedArrayToConsole(SingleHopLoop(1, 7, 50, 0.5, 0.5));
             JaggedArrayToConsole(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
             
             // TODO: document all functions properyl. lmao this wont be fun
@@ -139,7 +139,7 @@ namespace RandomHoppers
             // this should loop over powers of 10 to illustrate how the averages converge
             int loops = Convert.ToInt32((max - min) / interval) + 1;
             string[][] retval = new string[loops + 2][];
-            retval[0] = new string[] { "Running a loop on a single hopper to illustrate how averages converge as iterations increase. Line length = " + "length" + " ; Probability = " + probability };
+            retval[0] = new string[] { "Running a loop on a single hopper to illustrate how repeats converge as iterations increase. Line length = " + "length" + " ; Probability = " + probability };
             retval[1] = new string[] { "Iterations" , "Average travel time", "Standard Deviation" , "Time Taken (ms)" };
             // construct the array to return
 

@@ -36,7 +36,7 @@ namespace RandomHoppers
             {
                 for (int j = 0; j < array[i].Length; j++)
                 {
-                    Console.Write(array[i][j] + "\t");
+                    Console.Write(array[i][j] + " \t");
                 }
                 Console.WriteLine();
             }
@@ -46,7 +46,7 @@ namespace RandomHoppers
         {
             int loops = Convert.ToInt32((max - min) / interval);
             string[][] retval  = new string[loops + 2][];
-            int iteration = 0;
+            int iteration = 1;
             retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max + " with probability " + probability };
             retval[1] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" , "Average travel time" , "Time taken to Calculate (ms)" };
 
@@ -99,7 +99,7 @@ namespace RandomHoppers
             
             int loops = Convert.ToInt32((max - min) / interval) + 1;
             string[][] retval = new string[loops + 2][];
-            int iteration = 0;
+            int iteration = 1;
             retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max + " over " + iterations + " iterations" };
             retval[1] = new string[] { "Probability", "Average hoppers on line", "Standard deviation", "Average travel time", "Time taken to Calculate (ms)" };
 

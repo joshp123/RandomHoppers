@@ -23,8 +23,9 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            LoopOverPowersOfTen(2,2,1,0.9);
-
+            LoopOverPowersOfTen(3, 5, 1, 0.5);
+            LoopOverProbabilities(0.05, 1.00, 0.05, 10000);
+            
             // TODO: make this properly OO
 
             // TODO: make this a UI
@@ -36,9 +37,17 @@ namespace RandomHoppers
 
         private static void LoopOverPowersOfTen(int min, int max, double interval, double probability)
         {
-            for (double i = min; i == max; i += interval)
+            for (double i = min; i < max + interval; i += interval)
             {
-                Console.WriteLine("Testing a MultiHop of line length 50, probability 0.5, for 10^" + i + " iterations");
+                if (!(0 <= probability && probability <= 1))
+                {
+                    Console.WriteLine("Probability is not valid (between 0 and 1). Stopping");
+                    break;
+                }
+
+                // should probably re-do this with exceptions but that would probably just complicate the codebase tbh
+                
+                Console.WriteLine("Testing a MultiHop of line length 50, probability " + probability + ", for 10^" + i + " iterations");
 
                 if (i >= 9)
                 // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
@@ -51,23 +60,37 @@ namespace RandomHoppers
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                Tuple<double, double> average_and_stdev = MultiHop(50, Convert.ToInt32(Math.Pow(10, i)), probability);
-                double average = average_and_stdev.Item1;
-                double stdev = average_and_stdev.Item2;
-
+                Tuple<double, double, double> stats = MultiHop(50, Convert.ToInt32(Math.Pow(10, i)), probability);
+                double average = stats.Item1;
+                double stdev = stats.Item2;
+                double average_travel_time = stats.Item3;
+                
+                Console.WriteLine("Hoppers per line stats:");
                 Console.WriteLine("Average = " + average);
                 Console.WriteLine("Standard deviation = " + stdev);
+                Console.WriteLine("\nAverage Travel Time = " + average_travel_time);
                 Console.WriteLine("This took: " + sw.ElapsedMilliseconds + " milliseconds\n");
 
                 sw.Stop();
             }
         }
 
-        private static void LoopOverProbabilities(int min, int max, double interval, int iterations)
+        private static void LoopOverProbabilities(double min, double max, double interval, int iterations)
         {
-            for (double i = min; i < max; i += interval)
+            if (min < 0)
             {
-                Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for 10^" + iterations + " iterations");
+                Console.WriteLine("Probability out of range. Terminating");
+                return;
+            }
+            else if (max > 1)
+            {
+                Console.WriteLine("Probability out of range. Terminating");
+                return;
+            }
+            
+            for (double i = min; i < max + interval; i += interval)
+            {
+                Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for " + iterations + " iterations");
 
                 if (iterations >= 100000000)
                 // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
@@ -80,12 +103,15 @@ namespace RandomHoppers
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                Tuple<double, double> average_and_stdev = MultiHop(50, iterations, i);
-                double average = average_and_stdev.Item1;
-                double stdev = average_and_stdev.Item2;
+                Tuple<double, double, double> stats = MultiHop(50, iterations, i);
+                double average = stats.Item1;
+                double stdev = stats.Item2;
+                double average_travel_time = stats.Item3;
 
+                Console.WriteLine("Hoppers per line stats:");
                 Console.WriteLine("Average = " + average);
                 Console.WriteLine("Standard deviation = " + stdev);
+                Console.WriteLine("\nAverage Travel Time = " + average_travel_time);
                 Console.WriteLine("This took: " + sw.ElapsedMilliseconds + " milliseconds\n");
 
                 sw.Stop();
@@ -247,14 +273,14 @@ namespace RandomHoppers
 
         }
 
-        static Tuple<double,double> MultiHop(int length, int maxtime, double probability)
+        static Tuple<double,double,double> MultiHop(int length, int maxtime, double probability)
         {
             // returns average number of hoppers per line and the standard deviation as a tuple of doubles
 
             int time = 0; // time counter
             int[] line = new int[length]; // initiate the line array
 
-            PrintCurrentState(time, length, line); // testing line only
+            // PrintCurrentState(time, length, line); // testing line only
 
             // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime); // testing line only
 
@@ -323,21 +349,28 @@ namespace RandomHoppers
                 }
                 hopper_count[time - 1] = current_hoppers;
 
-                PrintCurrentState(time, length, line); // (only used for visually testing)
+                // PrintCurrentState(time, length, line); // (only used for visually testing)
 
             }
 
             // now that we have finished looping, take the minimum number from the line (counter always incremments), so we can disregard all values greater than 
-            // line[line.Max()] from our average travel time calculations (as they haven't finished hopping)
+            // line[line.min()] from our average travel time calculations (as they haven't finished hopping)
 
-            // this is wrong var valid_times = new ArraySegment<int>(travel_time, 0, line.Min() - 2);
-            Console.WriteLine(line.Min());
-            foreach(int i in travel_time.Take(line.Min(j => j != 0)))
-                Console.WriteLine(i);
-            double average_travel_time = travel_time.Take(line.Min() - 1).Average();
+            // loops backward over the line. the first nonzero value it encounters is the smallest value on the line
+            // since int isn't nullable, blank positions are represented by 0 not null, so we can't take the minimum of the array and we have to do this
 
-                        
-
+            int linemin = MinNonZeroOfArray(line);
+            double average_travel_time = -1;
+            
+            try
+            {
+                average_travel_time = travel_time.Take(linemin - 1).Average();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("No hoppers have completed their run. No average travel time statistics available");
+            }
+            
             // get average hoppers per line between t=0 and t=maxtime, and standard deviation of this
 
             // interestingly the language implementations of .Average(); and this stdeviation calculation are fast as hell and
@@ -348,8 +381,26 @@ namespace RandomHoppers
             double sumOfSquaresOfDifferences = hopper_count.Select(val => (val - average) * (val - average)).Sum();
             double stdev = Math.Sqrt(sumOfSquaresOfDifferences / hopper_count.Length); 
 
-            return new Tuple<double,double>(average,stdev);
+            return new Tuple<double,double,double>(average,stdev,average_travel_time);
             
+        }
+
+        private static int MinNonZeroOfArray(int[] line)
+        {
+            // function to return the nonzero minimum value of an array (assuming the array is sorted in descending order e.g. {9, 8, 7})
+            
+            for (int i = line.Length -1; i >= 0; i--)
+            {
+                if (line[i] == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    return line[i];
+                }
+            }
+            return -1;
         }
 
         static double SingleHop(int length, double probability){

@@ -103,7 +103,7 @@ namespace RandomHoppers
 
             for (double i = min; i < (max + interval); i += interval)
             {
-                Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for " + iterations + " iterations");
+                // Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for " + iterations + " iterations"); // line for testing purposes only
                 iteration++; 
                 // this is the array counter variable counting which loop we are on
                 // not to be confused with the length of time we are calling the multihop for. which is technically maxtime. i could change this but effort

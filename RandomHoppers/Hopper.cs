@@ -24,10 +24,13 @@ namespace RandomHoppers
         static void Main(string[] args)
         {
 
-            JaggedArrayToCSV(SingleHopLoop(1, 7, 50, 0.5, 0.5));
+            JaggedArrayToCSV(SingleHopLoop(0, 4, 50, 0.1, 0.5));
             JaggedArrayToCSV(LoopOverPowersOfTen(1, 8, 1, 0.5));
-            JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.5, 10000));
-            
+            JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
+
+            // this creates 3 CSV files for tasks 1,2 and 3 respectively; all ready to create graphs from.
+            // pro as heck if you ask me
+
             // TODO: document all functions properyl. lmao this wont be fun
 
             // TODO: add an interactive thingy so you can pick functions to CSV
@@ -86,8 +89,8 @@ namespace RandomHoppers
                     throw new ArgumentOutOfRangeException("Probability out of range");
                 }
                 
-                Console.WriteLine("Testing a MultiHop of line length 50, probability " + probability + 
-                    ",for 10^" + i + " iterations");
+                // Console.WriteLine("Testing a MultiHop of line length 50, probability " + probability + 
+                //    ",for 10^" + i + " iterations");
 
                 if (i >= 9)
                 {
@@ -212,42 +215,10 @@ namespace RandomHoppers
             // Create a file to list our number of stat
             // Doing this as a .csv so statistics in excel are easy to manage
 
-            string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
+            string filepath = CSVFilepathBuilder(array);
+            // build a filename based on the "_ignore_" field in array.
+            // Extracted to a separate method for ~clarity~ because it was long and stuff
 
-            // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
-            // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better#
-            // really isn't worth bothering)
-
-            string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\Stats\\";
-
-            try
-            {
-                if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
-                {
-                    savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\";
-                }
-            }
-            catch (Exception)
-            {
-                // fail silently
-            }
-            
-            string method_path = "_";
-            if(array[0][1] != null)
-            {
-                method_path = "_" + array[0][1];
-                method_path = method_path.Replace("_ignore_", "");
-            }
-
-            string filepath = savepath + method_path + "_" + timestamp + ".csv";
-            if (filepath.Length >= 255)
-            {
-                filepath = filepath.Replace(".csv", "");
-                filepath.Remove(250);
-                filepath = filepath + ".csv";
-                // if the filename is longer than 254 chars, chop to avoid file system errors
-                // whilst keeping the .csv extension
-            }
             System.IO.StreamWriter file = new System.IO.StreamWriter(filepath);
 
             if (array.Length > 1000000)
@@ -285,6 +256,49 @@ namespace RandomHoppers
 
             return;
 
+        }
+
+        private static string CSVFilepathBuilder(string[][] array)
+        {
+            // method to create a file path based on the hidden information in the array
+            
+            string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
+
+            // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
+            // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better#
+            // really isn't worth bothering)
+
+            string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\Stats\\";
+
+            try
+            {
+                if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
+                {
+                    savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\";
+                }
+            }
+            catch (Exception)
+            {
+                // fail silently
+            }
+
+            string method_path = "";
+            if (array[0][1] != null)
+            {
+                method_path = array[0][1].Replace("_ignore_", "");
+                // remove the "ignore" string from method_path so it looks how it should
+            }
+
+            string filepath = savepath + method_path + "_" + timestamp + ".csv";
+            if (filepath.Length >= 255)
+            {
+                filepath = filepath.Replace(".csv", "");
+                filepath.Remove(250);
+                filepath = filepath + ".csv";
+                // if the filename is longer than 254 chars, chop to avoid file system errors
+                // whilst keeping the .csv extension
+            }
+            return filepath;
         }
 
         static Tuple<double,double,double> MultiHop(int length, int maxtime, double probability)
@@ -394,7 +408,7 @@ namespace RandomHoppers
             {
                 average_travel_time = travel_time.Take(linemin - 1).Average();
             }
-            catch (ArgumentOutOfRangeException)
+            catch (Exception)
             {
                 Console.WriteLine("No hoppers have completed their run. No average travel time statistics available");
                 // if no hoppers on the line, average_travel_time is -1 and then travel_time.Take will try and take zero
@@ -461,6 +475,7 @@ namespace RandomHoppers
                 // nb this is after first hop
 
                 // this is broken since i changed it to use arrays for MultiHop and there's really no point changing
+                // haha not any more. overloading functions is the best fucking thing. yay
 
                 if (pos == length)
                 {
@@ -498,6 +513,34 @@ namespace RandomHoppers
                     Console.Write("_");
                 }
                 // print _ in empty location
+            }
+            Console.WriteLine();
+        }
+
+        static void PrintCurrentState(double time, int length, int pos)
+        {
+            // Method to visually represent the line. It will break if the length is over the display width of the
+            // console but that's an edge case that's not worth fixing. Don't use one over like 70
+
+            // Overloaded version for SingleHopper
+
+            if (time == 0)
+                Console.Write("Start:\t");
+            else
+            {
+                Console.Write(time + "\t");
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                if (i == pos)
+                    Console.Write(1);
+                // print hopper value if a hopper exists at this location 
+                else
+                {
+                    Console.Write("_");
+                    // print _ in empty location
+                }
             }
             Console.WriteLine();
         }

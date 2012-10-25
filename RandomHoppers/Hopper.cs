@@ -10,8 +10,8 @@ namespace RandomHoppers
     class Hopper
     {
         // Declaring instance of Random outside of the Hop() function, because:
-        // otherwise when calling Hop to create a new Random in close succession, they'll have the same system time as seed
-        // and thus will not be random.
+        // otherwise when calling Hop to create a new Random in close succession, they'll have the same system
+        // time as seed and thus will not be random.
         
         static Random rand = new Random();
 
@@ -23,8 +23,8 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            JaggedArrayToConsole(SingleHopLoop(1, 7, 50, 0.5, 0.5));
-            JaggedArrayToConsole(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
+            JaggedArrayToConsole(SingleHopLoop(1, 3, 50, 0.5, 0.5));
+            JaggedArrayToConsole(LoopOverProbabilities(0.05, 1.00, 0.5, 10000));
             
             // TODO: document all functions properyl. lmao this wont be fun
                                 
@@ -33,15 +33,25 @@ namespace RandomHoppers
 
         private static void JaggedArrayToConsole(string[][] array)
         {
+            
+            // this looks terrible because the console is only 80chars wide and there's a lot of stuff to display.
+            // WONTFIX
             for (int i = 0; i < array.Length; i++)
             {
                 for (int j = 0; j < array[i].Length; j++)
                 {
                     if (! array[i][j].Contains("_ignore_"))
                     {
-                        // Only write the string to the console if it doesn't contain "_ignore_", which is used in array[0][1] to pass a save filename to the CSV function.
-                        // We could just ignore array[0][1] permanently but this is not very updatable and gives us the option to "hide" more stuff that's only for the program and not for outputting
-                        // Returning a tuple with array and filename from the functions is also an option but again not particularly updatable
+                        
+                        /* Only write the string to the console if it doesn't contain "_ignore_", which is used in
+                         * array[0][1] to pass a save filename to the CSV function.
+                         * 
+                         * We could just ignore array[0][1] permanently but this is not very updatable and gives us the
+                         * option to "hide" more stuff that's only for the program and not for outputting.
+                         * 
+                         * Returning a tuple with array and  filename from the functions is also an option but
+                         * again not particularly updatable.
+                         */
 
                         Console.Write(array[i][j] + " \t");
                     }
@@ -55,8 +65,10 @@ namespace RandomHoppers
             int loops = Convert.ToInt32((max - min) / interval);
             string[][] retval  = new string[loops + 2][];
             int iteration = 1;
-            retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max + " with probability " + probability };
-            retval[1] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" , "Average travel time" , "Time taken to Calculate (ms)" };
+            retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max +
+                " with probability " + probability };
+            retval[1] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" ,
+                "Average travel time" , "Time taken to Calculate (ms)" };
 
             // this code handles creating the array to return
             // basically it returns a big ass table
@@ -69,15 +81,17 @@ namespace RandomHoppers
                     Console.WriteLine("Probability is not valid (between 0 and 1). Stopping");
                     throw new ArgumentOutOfRangeException("Probability out of range");
                 }
-
-                // should probably re-do this with exceptions but that would probably just complicate the codebase tbh
                 
-                Console.WriteLine("Testing a MultiHop of line length 50, probability " + probability + ", for 10^" + i + " iterations");
+                Console.WriteLine("Testing a MultiHop of line length 50, probability " + probability + 
+                    ",for 10^" + i + " iterations");
 
                 if (i >= 9)
-                // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
-                // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
                 {
+
+                    /* dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an
+                     * OutOfMemory exception. Creating an array of length 10^9 doesn't work in C either without
+                     * ~workarounds~ so WONTFIX
+                     */
                     Console.WriteLine("Iteration size is too large and will overflow the memory. Stopping");
                     break;
                 }
@@ -92,7 +106,8 @@ namespace RandomHoppers
 
                 sw.Stop();
 
-                retval[iteration] = new string[] { Math.Pow(10, i).ToString(), average.ToString(), stdev.ToString(), average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
+                retval[iteration] = new string[] { Math.Pow(10, i).ToString(), average.ToString(), stdev.ToString(),
+                    average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
             }
             return retval;
         }
@@ -108,20 +123,27 @@ namespace RandomHoppers
             int loops = Convert.ToInt32((max - min) / interval) + 1;
             string[][] retval = new string[loops + 2][];
             int iteration = 1;
-            retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max + " over " + iterations + " iterations" };
-            retval[1] = new string[] { "Probability", "Average hoppers on line", "Standard deviation", "Average travel time", "Time taken to Calculate (ms)" };
+            retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max +
+                " over " + iterations + " iterations" };
+            retval[1] = new string[] { "Probability", "Average hoppers on line", "Standard deviation",
+                "Average travel time", "Time taken to Calculate (ms)" };
 
             for (double i = min; i < (max + interval); i += interval)
             {
-                // Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for " + iterations + " iterations"); // line for testing purposes only
+                // Console.WriteLine("Testing a MultiHop of line length 50, probability " + i + ", for "
+                // + iterations + " iterations"); // line for testing purposes only
                 iteration++; 
                 // this is the array counter variable counting which loop we are on
-                // not to be confused with the length of time we are calling the multihop for. which is technically maxtime. i could change this but effort
+                // not to be confused with the length of time we are calling the multihop for.
+                // Which is technically maxtime. i could change this but effort
 
                 if (iterations >= 100000000)
-                // dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an OutOfMemory exception
-                // creating an array of lenght 10^9 doesn't work in C either without ~workarounds~ so WONTFIX
                 {
+
+                    /* dont' do more than 100m iterations becaue that makes an object larger than 2gb and you get an
+                     * OutOfMemory exception. Creating an array of length 10^9 doesn't work in C either without
+                     * ~workarounds~ so WONTFIX
+                     */
                     Console.WriteLine("Iteration size is too large and will overflow the memory. Stopping");
                     break;
                 }
@@ -136,7 +158,8 @@ namespace RandomHoppers
 
                 sw.Stop();
 
-                retval[iteration] = new string[] { i.ToString(), average.ToString(), stdev.ToString(), average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
+                retval[iteration] = new string[] { i.ToString(), average.ToString(), stdev.ToString(),
+                    average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
             }
             return retval;
         }
@@ -146,7 +169,8 @@ namespace RandomHoppers
             // this should loop over powers of 10 to illustrate how the averages converge
             int loops = Convert.ToInt32((max - min) / interval) + 1;
             string[][] retval = new string[loops + 2][];
-            retval[0] = new string[] { "Running a loop on a single hopper to illustrate how repeats converge as iterations increase. Line length = " + "length" + " ; Probability = " + probability };
+            retval[0] = new string[] { "Running a loop on a single hopper to illustrate how repeats converge as" + 
+                "iterations increase. Line length = " + "length" + " ; Probability = " + probability };
             retval[1] = new string[] { "Iterations" , "Average travel time", "Standard Deviation" , "Time Taken (ms)" };
             // construct the array to return
 
@@ -155,7 +179,8 @@ namespace RandomHoppers
             for (double i = min; i < (max + interval); i+= interval)
 			{
 			    iteration++;
-                // use iteration variable to track instead of i because it's a little bit more lightweight (as i is a power of ten)
+                // use iteration variable to track instead of i because it's a little bit more lightweight
+                // (as i is a power of ten)
 
                 int repeats = Convert.ToInt32(Math.Pow(10,i));
                 int[] times = new int[repeats];
@@ -168,7 +193,8 @@ namespace RandomHoppers
                 }
                 Tuple<double, double> stats = AverageAndStdevOfArray(times);
                 sw.Stop();
-                retval[iteration + 1] = new string[] { repeats.ToString(), stats.Item1.ToString(), stats.Item2.ToString(), sw.ElapsedMilliseconds.ToString() };
+                retval[iteration + 1] = new string[] { repeats.ToString(), stats.Item1.ToString(),
+                    stats.Item2.ToString(), sw.ElapsedMilliseconds.ToString() };
                 // add to the array to return
             }
             
@@ -184,7 +210,8 @@ namespace RandomHoppers
             string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
 
             // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
-            // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better really isn't worth bothering)
+            // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better#
+            // really isn't worth bothering)
 
             string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
 
@@ -253,13 +280,15 @@ namespace RandomHoppers
 
             // PrintCurrentState(time, length, line); // testing line only
 
-            // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime); // testing line only
+            // Console.WriteLine("Starting hopper with parameters: \tlength = " + length + "\t maxtime = " + maxtime);
+            // testing line only
 
             int[] hopper_count = new int[maxtime];
             // initiate array for getting average of hoppers
             
             int[] travel_time = new int[maxtime];
-            // initiate array with size maxtime, as even if one hopper is added for every unit of time, the amount of hoppers in existence ever will never be more than maxtime
+            // initiate array with size maxtime, as even if one hopper is added for every unit of time,
+            // the amount of hoppers in existence ever will never be more than maxtime
 
             // start hopper 1 off
             line[0] = 1;
@@ -276,7 +305,8 @@ namespace RandomHoppers
                     {
                         current_hoppers++;
                         travel_time[line[i]-1] ++;
-                        // using line[i] as an array index, i.e. first hopper is represented as "1", second "2" in the array. When it hits a number (e.g. "2"), increment travel time by one
+                        // using line[i] as an array index, i.e. first hopper is represented as "1", second "2" in
+                        // the array. When it hits a number (e.g. "2"), increment travel time by one
                         
                         // run hop routine
                         if (probability > GetNextDouble()) // if coinflip works, hop!
@@ -293,7 +323,8 @@ namespace RandomHoppers
                                 if (line[i + 1] == 0) // if next space is free, hop!
                                 {
                                     line[i + 1] = line[i];
-                                    // change the variable first before we blank it otherwise we lose track of what it is!
+                                    // change the variable first before we blank it otherwise we lose track of
+                                    // what it is!
                                     line[i] = 0;
                                     // hop!
                                 }
@@ -311,7 +342,9 @@ namespace RandomHoppers
                         // figure out what number to stick on the line
                         unique_hoppers++;
                         line[0] = unique_hoppers;
-                        // incrementing a counter here is probably more efficent than searching the travel time array to figure out how many non-zero elements there are
+
+                        // incrementing a counter here is probably more efficent than searching the travel time array 
+                        // to figure out how many non-zero elements there are
 
                         // count non-zero array elements
                         current_hoppers++;
@@ -325,13 +358,20 @@ namespace RandomHoppers
 
             }
 
-            // now that we have finished looping, take the minimum number from the line (counter always incremments), so we can disregard all values greater than 
-            // line[line.min()] from our average travel time calculations (as they haven't finished hopping)
-
-            // loops backward over the line. the first nonzero value it encounters is the smallest value on the line
-            // since int isn't nullable, blank positions are represented by 0 not null, so we can't take the minimum of the array and we have to do this
+             /* 
+              * now that we have finished looping, take the minimum number from the line (counter always incremments),
+              * so we can disregard all values greater than line[line.min()] from our average travel time calculations
+              * (as they haven't finished hopping)
+              */
 
             int linemin = MinNonZeroOfArray(line);
+
+            /*
+             * loops backward over the line. the first nonzero value it encounters is the smallest value on the line
+             * since int isn't nullable, blank positions are represented by 0 not null, so we can't take the minimum
+             * of the array and we have to do this
+             */
+
             double average_travel_time = -1;
             
             try
@@ -341,12 +381,15 @@ namespace RandomHoppers
             catch (ArgumentOutOfRangeException)
             {
                 Console.WriteLine("No hoppers have completed their run. No average travel time statistics available");
+                // if no hoppers on the line, average_travel_time is -1 and then travel_time.Take will try and take zero
+                // elements and throw an exception
             }
             
             // get average hoppers per line between t=0 and t=maxtime, and standard deviation of this
 
-            // interestingly the language implementations of .Average(); and this stdeviation calculation are fast as hell and
-            // add almost nothing to the length of time to iterate over 10^8 time units (in the order of <1%)
+            // interestingly the language implementations of .Average(); (as AverageAndStdevOfArray calls) and this
+            // stdeviation calculation are fast as hell and add almost nothing to the length of time to iterate over
+            // 10^8 time units (in the order of <1%). ~the more you know~
 
             Tuple<double, double> array_stats = AverageAndStdevOfArray(hopper_count);
 
@@ -364,7 +407,8 @@ namespace RandomHoppers
 
         private static int MinNonZeroOfArray(int[] line)
         {
-            // function to return the nonzero minimum value of an array (assuming the array is sorted in descending order e.g. {9, 8, 7})
+            // function to return the nonzero minimum value of an array (assuming the array is sorted in descending
+            // order e.g. {9, 8, 7})
             
             for (int i = line.Length -1; i >= 0; i--)
             {
@@ -380,7 +424,8 @@ namespace RandomHoppers
             return -1;
         }
 
-        static int SingleHop(int length, double probability){
+        static int SingleHop(int length, double probability)
+        {
             int pos = 1; // position, x 
             int time = 0; // time counter
 
@@ -395,15 +440,19 @@ namespace RandomHoppers
                 if (GetNextDouble() > 0.5)
                     pos++;
 
-                // PrintCurrentState(time, length, pos); // this is broken since i changed it to use arrays for MultiHop and there's really no point changing
+                // PrintCurrentState(time, length, pos);
                 // print what it looks like now
                 // nb this is after first hop
 
+                // this is broken since i changed it to use arrays for MultiHop and there's really no point changing
 
                 if (pos == length)
                 {
-                    // Console.WriteLine("End of line reached. It took " + time + " hops to reach the end of the line of length " + length);
+                    // Console.WriteLine("End of line reached. It took " + time + 
+                    // " hops to reach the end of the line of length " + length);
+
                     return time; // return number of hops taken to reach end of line
+                    
                     // break out here, when the position reaches length
                 }
             }
@@ -413,7 +462,9 @@ namespace RandomHoppers
 
         static void PrintCurrentState(double time, int length, int[] line)
         {
-            // Method to visually represent the line. It will break if the length is over the display width of the console but that's an edge case that's not worth fixing
+            // Method to visually represent the line. It will break if the length is over the display width of the
+            // console but that's an edge case that's not worth fixing. Don't use one over like 70
+
             if (time == 0)
                 Console.Write("Start:\t");
             else
@@ -425,7 +476,7 @@ namespace RandomHoppers
             {
                 if (line[i] != 0)
                     Console.Write(line[i]);
-                // print hopper value if a hopper exists at this location (its gonna be numbered for multihoppers, 1 for singlehopper. i could distinguish but effort)
+                // print hopper value if a hopper exists at this location 
                 else
                 {
                     Console.Write("_");

@@ -23,10 +23,14 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            JaggedArrayToConsole(SingleHopLoop(1, 3, 50, 0.5, 0.5));
-            JaggedArrayToConsole(LoopOverProbabilities(0.05, 1.00, 0.5, 10000));
+
+            JaggedArrayToCSV(SingleHopLoop(1, 7, 50, 0.5, 0.5));
+            JaggedArrayToCSV(LoopOverPowersOfTen(1, 8, 1, 0.5));
+            JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.5, 10000));
             
             // TODO: document all functions properyl. lmao this wont be fun
+
+            // TODO: add an interactive thingy so you can pick functions to CSV
                                 
             return;
         }
@@ -66,7 +70,7 @@ namespace RandomHoppers
             string[][] retval  = new string[loops + 2][];
             int iteration = 1;
             retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max +
-                " with probability " + probability };
+                " with probability " + probability , "_ignore_multi_hop_powers_of_10_between_" + min + "_and_" + max};
             retval[1] = new string[] { "Iterations" , "Average hoppers on line", "Standard deviation" ,
                 "Average travel time" , "Time taken to Calculate (ms)" };
 
@@ -124,7 +128,7 @@ namespace RandomHoppers
             string[][] retval = new string[loops + 2][];
             int iteration = 1;
             retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max +
-                " over " + iterations + " iterations" };
+                " over " + iterations + " iterations" , "_ignore_multi_hop_probabilities_between_" + min + "_and_" + max};
             retval[1] = new string[] { "Probability", "Average hoppers on line", "Standard deviation",
                 "Average travel time", "Time taken to Calculate (ms)" };
 
@@ -170,7 +174,8 @@ namespace RandomHoppers
             int loops = Convert.ToInt32((max - min) / interval) + 1;
             string[][] retval = new string[loops + 2][];
             retval[0] = new string[] { "Running a loop on a single hopper to illustrate how repeats converge as" + 
-                "iterations increase. Line length = " + "length" + " ; Probability = " + probability };
+                "iterations increase. Line length = " + "length" + " ; Probability = " + probability ,
+                "_ignore_single_hop_powers_of_10_between_" + min + "_and_" + max};
             retval[1] = new string[] { "Iterations" , "Average travel time", "Standard Deviation" , "Time Taken (ms)" };
             // construct the array to return
 
@@ -213,7 +218,7 @@ namespace RandomHoppers
             // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better#
             // really isn't worth bothering)
 
-            string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
+            string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\Stats\\";
 
             try
             {
@@ -231,8 +236,19 @@ namespace RandomHoppers
             if(array[0][1] != null)
             {
                 method_path = "_" + array[0][1];
+                method_path = method_path.Replace("_ignore_", "");
             }
-            System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_path + "_" + timestamp + ".csv");
+
+            string filepath = savepath + method_path + "_" + timestamp + ".csv";
+            if (filepath.Length >= 255)
+            {
+                filepath = filepath.Replace(".csv", "");
+                filepath.Remove(250);
+                filepath = filepath + ".csv";
+                // if the filename is longer than 254 chars, chop to avoid file system errors
+                // whilst keeping the .csv extension
+            }
+            System.IO.StreamWriter file = new System.IO.StreamWriter(filepath);
 
             if (array.Length > 1000000)
             {

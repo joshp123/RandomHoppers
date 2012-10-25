@@ -37,7 +37,14 @@ namespace RandomHoppers
             {
                 for (int j = 0; j < array[i].Length; j++)
                 {
-                    Console.Write(array[i][j] + " \t");
+                    if (! array[i][j].Contains("_ignore_"))
+                    {
+                        // Only write the string to the console if it doesn't contain "_ignore_", which is used in array[0][1] to pass a save filename to the CSV function.
+                        // We could just ignore array[0][1] permanently but this is not very updatable and gives us the option to "hide" more stuff that's only for the program and not for outputting
+                        // Returning a tuple with array and filename from the functions is also an option but again not particularly updatable
+
+                        Console.Write(array[i][j] + " \t");
+                    }
                 }
                 Console.WriteLine();
             }
@@ -177,7 +184,7 @@ namespace RandomHoppers
             string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
 
             // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
-            // (lol hardcoding paths this is really hacky and bad but oh well)
+            // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better really isn't worth bothering)
 
             string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
 
@@ -210,9 +217,16 @@ namespace RandomHoppers
             for (int i = 0; i < array.Length; i++)
             {
                 string line = "";
+
                 for (int j = 0; j < array[i].Length; j++)
                 {
-                    if (j == (array[i].Length - 1))
+                    if (array[i][j].Contains("_ignore_"))
+                    {
+                        continue;
+                        // do nothing if it contains "_ignore_"
+                    }
+                    
+                    else if (j == (array[i].Length - 1))
                     {
                         line = line + array[i][j];
                         // don't add an extra column on the final thing per line

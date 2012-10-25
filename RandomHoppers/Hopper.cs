@@ -168,133 +168,67 @@ namespace RandomHoppers
             return retval;
         }
 
-        private static void ToCSV(Func<int,int,double> method, int arg1, int arg2, string method_str, int iterations)
+        private static void JaggedArrayToCSV(string[][] array)
         {
-            // Method to run another method a certain number of times, and spit out a CSV file based on whatever
-            // the method returns.
-            // Use it to create statistics on, well, pretty much anything!
 
-            // Takes arguments method (must return a covariant of double. i.e. floats and ints are ok), that
-            // method as a string (this is purely for naming files), and the number of iterations to run it for.
-
-            // CSV file is excel compatible; starts off as a single column file until it hits excel 2013's row limit (~1m)
-            
-            
             // Create a file to list our number of stat
             // Doing this as a .csv so statistics in excel are easy to manage
-            
+
             string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
-            
+
             // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
+            // (lol hardcoding paths this is really hacky and bad but oh well)
 
             string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
 
             try
             {
-               if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
-               {
-                   savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\"; 
-               }
+                if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
+                {
+                    savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\";
+                }
             }
             catch (Exception)
             {
                 // fail silently
             }
-
-            System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_str + "_" + iterations + "_" + timestamp + ".csv");
             
-            int columns;
-
-            if (iterations > 1000000)
+            string method_path = "_";
+            if(array[0][1] != null)
             {
-                columns = iterations / 1000000;
+                method_path = "_" + array[0][1];
             }
-            else columns = 1;
-            // make it fit excel's 1m row limit
+            System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_path + "_" + timestamp + ".csv");
 
-            // Create an array for the statistic; using doubles incase we want to take an average of it
-
-            double[] stat = new double[iterations];
-            string line = "";
-            for (int i = 0; i < iterations; i++)
+            if (array.Length > 1000000)
             {
-                stat[i] = method(arg1, arg2);
-                // call the method specified when calling this method (ToCSV)
-                if ((i+1) % columns == 0)
+                // fix this with exceptions
+                Console.WriteLine("Your table is too damn big! (and will overflow excel. Use less than 1m loops");
+                return;
+            }
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                string line = "";
+                for (int j = 0; j < array[i].Length; j++)
                 {
-                    line = line + stat[i].ToString();  // since writing line, dont need final ","
-                    file.WriteLine(line);
-                    line = "";
+                    if (j == (array[i].Length - 1))
+                    {
+                        line = line + array[i][j];
+                        // don't add an extra column on the final thing per line
+                    }
+                    else
+                        line = line + array[i][j] + ",";
                 }
-                else line = line + stat[i].ToString() + ", ";
-                // if method returns int should implicitly cast to double
+                file.WriteLine(line);
             }
 
-            if (line != "")
-                file.WriteLine(line);
-
-            // if it ended on i = 999 and line is not blank or whatever write the residual bit
             file.Close();
-            // close file
+            // dont forget to close the file!
+
+            return;
 
         }
-
-        //private static void JaggedArrayToCSV(string[][] array)
-        //{
-
-        //    // Create a file to list our number of stat
-        //    // Doing this as a .csv so statistics in excel are easy to manage
-
-        //    string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
-
-        //    // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
-
-        //    string savepath = "D:\\Coding\\PHYS2320_Computing_2\\RandomHoppers\\";
-
-        //    try
-        //    {
-        //        if (Directory.Exists("M:\\PHYS2320_Computing_2\\RandomHoppers"))
-        //        {
-        //            savepath = "M:\\PHYS2320_Computing_2\\RandomHoppers\\";
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        // fail silently
-        //    }
-            
-        //    // TODO: parse array[0] as a save path
-        //    System.IO.StreamWriter file = new System.IO.StreamWriter(savepath + method_str + "_" + iterations + "_" + timestamp + ".csv");
-
-        //    if (array.Length > 1000000)
-        //    {
-        //        // fix this with exceptions
-        //        Console.WriteLine("Your table is too damn big! (and will overflow excel. Use less than 1m loops");
-        //        return;
-        //    }
-
-        //    for (int i = 0; i < array.Length; i++)
-        //    {
-        //        string line = "";
-        //        for (int j = 0; j < array[i].Length; j++)
-        //        {
-        //            if (j == (array[i].Length - 1))
-        //            {
-        //                line = line + array[i][j];
-        //                // don't add an extra column on the final thing per line
-        //            }
-        //            else
-        //                line = line + array[i][j] + ",";
-        //        }
-        //        file.WriteLine(line);
-        //    }
-
-        //    file.Close();
-        //    // dont forget to close the file!
-
-        //    return;
-
-        //}
 
         static Tuple<double,double,double> MultiHop(int length, int maxtime, double probability)
         {

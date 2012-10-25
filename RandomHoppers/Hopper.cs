@@ -262,7 +262,7 @@ namespace RandomHoppers
         {
             // method to create a file path based on the hidden information in the array
             
-            string timestamp = DateTime.Now.ToString("yyyy-mm-d_hh-mm-ss");
+            string timestamp = DateTime.Now.ToString("yyyy-mm-d_HH-mm-ss");
 
             // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
             // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better#

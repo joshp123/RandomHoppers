@@ -23,15 +23,24 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
+            try
+            {
+                JaggedArrayToCSV(SingleHopLoop(0, 4, 50, 0.1, 0.5));
+                JaggedArrayToCSV(LoopOverPowersOfTen(1, 8, 1, 0.5));
+                JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Errors were encountered.")
+                throw;
+            }
 
-            JaggedArrayToCSV(SingleHopLoop(0, 4, 50, 0.1, 0.5));
-            JaggedArrayToCSV(LoopOverPowersOfTen(1, 8, 1, 0.5));
-            JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
 
             // this creates 3 CSV files for tasks 1,2 and 3 respectively; all ready to create graphs from.
             // pro as heck if you ask me
 
-            // TODO: document all functions properyl. lmao this wont be fun
+            // TODO: document all functions properyl using XML. lmao this wont be fun
+            // http://msdn.microsoft.com/en-us/library/aa288481(v=vs.71).aspx
 
             // TODO: add an interactive thingy so you can pick functions to CSV
                                 

@@ -23,17 +23,16 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            try
-            {
+            //try
+            //{
                 JaggedArrayToCSV(SingleHopLoop(0, 4, 50, 0.1, 0.5));
-                JaggedArrayToCSV(LoopOverPowersOfTen(1, 8, 1, 0.5));
+                JaggedArrayToCSV(LoopOverPowersOfTen(1, 7.5, 1, 0.5));
                 JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Errors were encountered.")
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    Console.WriteLine("Errors were encountered.");
+            //}
 
 
             // this creates 3 CSV files for tasks 1,2 and 3 respectively; all ready to create graphs from.

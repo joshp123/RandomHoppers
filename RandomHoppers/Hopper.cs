@@ -25,9 +25,9 @@ namespace RandomHoppers
         {
             //try
             //{
-                JaggedArrayToCSV(SingleHopLoop(0, 4, 50, 0.1, 0.5));
+                JaggedArrayToCSV(SingleHopLoop(0.1, 4, 50, 0.1, 0.5));
                 JaggedArrayToCSV(LoopOverPowersOfTen(1, 7.5, 1, 0.5));
-                JaggedArrayToCSV(LoopOverProbabilities(0.05, 1.00, 0.05, 10000));
+                JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
             //}
             //catch (Exception)
             //{
@@ -75,10 +75,10 @@ namespace RandomHoppers
             }
         }
 
-        private static string[][] LoopOverPowersOfTen(int min, int max, double interval, double probability)
+        private static string[][] LoopOverPowersOfTen(double min, double max, double interval, double probability)
         {
             int loops = Convert.ToInt32((max - min) / interval);
-            string[][] retval  = new string[loops + 2][];
+            string[][] retval  = new string[loops + 3][];
             int iteration = 1;
             retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max +
                 " with probability " + probability , "_ignore_multi_hop_powers_of_10_between_" + min + "_and_" + max};
@@ -136,7 +136,7 @@ namespace RandomHoppers
             }
             
             int loops = Convert.ToInt32((max - min) / interval) + 1;
-            string[][] retval = new string[loops + 2][];
+            string[][] retval = new string[loops + 3][];
             int iteration = 1;
             retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max +
                 " over " + iterations + " iterations" , "_ignore_multi_hop_probabilities_between_" + min + "_and_" + max};
@@ -179,7 +179,7 @@ namespace RandomHoppers
             return retval;
         }
 
-        private static string[][] SingleHopLoop(int min, int max, int length, double interval, double probability)
+        private static string[][] SingleHopLoop(double min, double max, int length, double interval, double probability)
         {
             // this should loop over powers of 10 to illustrate how the averages converge
             int loops = Convert.ToInt32((max - min) / interval) + 1;
@@ -270,7 +270,7 @@ namespace RandomHoppers
         {
             // method to create a file path based on the hidden information in the array
             
-            string timestamp = DateTime.Now.ToString("yyyy-mm-d_HH-mm-ss");
+            string timestamp = DateTime.Now.ToString("yyyy-M-d_HH-mm-ss");
 
             // See if M:\ exists and save there (i.e. if we're at uni), otherwise just save on the D:\
             // (lol hardcoding paths this is really hacky and bad but oh well implementing anything better#

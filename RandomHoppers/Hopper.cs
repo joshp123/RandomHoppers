@@ -23,9 +23,9 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            JaggedArrayToCSV(SingleHopLoop(3, 8, 50, 1, 0.5));
-            JaggedArrayToCSV(LoopOverPowersOfTen(3, 8, 0.25, 0.5));
-             JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
+            JaggedArrayToCSV(SingleHopProbabilityLoop(0.001, 1.00, 50, 0.001, 5));
+            //JaggedArrayToCSV(LoopOverPowersOfTen(3, 8, 0.25, 0.5));
+            JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
 
             // this creates 3 CSV files for tasks 1,2 and 3 respectively; all ready to create graphs from.
             // pro as heck if you ask me
@@ -209,6 +209,44 @@ namespace RandomHoppers
             return retval;
         }
 
+        private static string[][] SingleHopProbabilityLoop(double min, double max, int length, double interval, double repeats_as_powers_of_10)
+        {
+            // this should loop over powers of 10 to illustrate how the averages converge
+            int loops = Convert.ToInt32((max - min) / interval) + 1;
+            string[][] retval = new string[loops + 2][];
+            retval[0] = new string[] { "Running a loop on a single hopper to illustrate how travel time varies with probability " + 
+                "Line length = " + length + " ; Repeats = 10^" + repeats_as_powers_of_10 ,
+                "_ignore_single_hop_probabilities_between_" + min + "_and_" + max};
+            retval[1] = new string[] { "Probability", "Average travel time", "Standard Deviation", "Time Taken (ms)" };
+            // construct the array to return
+
+            int iteration = 0;
+
+            for (double i = min; i < (max + interval); i += interval)
+            {
+                iteration++;
+                // use iteration variable to track instead of i because it's a little bit more lightweight
+                // (as i is a power of ten)
+
+                int repeats = Convert.ToInt32(Math.Pow(10, repeats_as_powers_of_10));
+                int[] times = new int[repeats];
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                for (int j = 0; j < repeats; j++)
+                {
+                    times[j] = SingleHop(length, i);
+                }
+                Tuple<double, double> stats = AverageAndStdevOfArray(times);
+                sw.Stop();
+                retval[iteration + 1] = new string[] { i.ToString(), stats.Item1.ToString(),
+                    stats.Item2.ToString(), sw.ElapsedMilliseconds.ToString() };
+                // add to the array to return
+            }
+
+            return retval;
+        }
+        
         private static void JaggedArrayToCSV(string[][] array)
         {
 

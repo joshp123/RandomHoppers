@@ -175,7 +175,7 @@ namespace RandomHoppers
         {
             // this should loop over powers of 10 to illustrate how the averages converge
             int loops = Convert.ToInt32((max - min) / interval) + 1;
-            string[][] retval = new string[loops + 2][];
+            string[][] retval = new string[loops + 3][];
             retval[0] = new string[] { "Running a loop on a single hopper to illustrate how repeats converge as" + 
                 "iterations increase. Line length = " + length + " ; Probability = " + probability ,
                 "_ignore_single_hop_powers_of_10_between_" + min + "_and_" + max};

@@ -23,9 +23,9 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            JaggedArrayToCSV(SingleHopLoop(3, 8, 50, 1, 0.5));
-            JaggedArrayToCSV(LoopOverPowersOfTen(3, 8, 0.25, 0.5));
-             JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
+            JaggedArrayToCSV(SingleHopLoop(3, 8, 50, 0.25, 0.5));
+            //JaggedArrayToCSV(LoopOverPowersOfTen(3, 8, 0.25, 0.5));
+            //JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
 
             // this creates 3 CSV files for tasks 1,2 and 3 respectively; all ready to create graphs from.
             // pro as heck if you ask me

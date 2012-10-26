@@ -505,7 +505,7 @@ namespace RandomHoppers
                 // start of a "hop", increase time by 1 unit
 
                 // flip coin to see if you hop
-                if (GetNextDouble() > 0.5)
+                if (GetNextDouble() < probability)
                     pos++;
 
                 // PrintCurrentState(time, length, pos);

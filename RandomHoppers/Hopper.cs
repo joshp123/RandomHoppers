@@ -23,9 +23,9 @@ namespace RandomHoppers
         
         static void Main(string[] args)
         {
-            JaggedArrayToCSV(SingleHopLoop(0.1, 5, 50, 0.1, 0.5));
-            JaggedArrayToCSV(LoopOverPowersOfTen(1, 7.5, 1, 0.5));
-            JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
+            JaggedArrayToCSV(SingleHopLoop(3, 8, 50, 1, 0.5));
+            JaggedArrayToCSV(LoopOverPowersOfTen(3, 8, 0.25, 0.5));
+             JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
 
             // this creates 3 CSV files for tasks 1,2 and 3 respectively; all ready to create graphs from.
             // pro as heck if you ask me
@@ -70,7 +70,7 @@ namespace RandomHoppers
         private static string[][] LoopOverPowersOfTen(double min, double max, double interval, double probability)
         {
             int loops = Convert.ToInt32((max - min) / interval) + 1;
-            string[][] retval  = new string[loops + 3][];
+            string[][] retval  = new string[loops + 2][];
             int iteration = 1;
             retval[0] = new string[] { "Running a loop over iterations between 10^" + min + " + 10^" + max +
                 " with probability " + probability , "_ignore_multi_hop_powers_of_10_between_" + min + "_and_" + max};
@@ -175,7 +175,7 @@ namespace RandomHoppers
         {
             // this should loop over powers of 10 to illustrate how the averages converge
             int loops = Convert.ToInt32((max - min) / interval) + 1;
-            string[][] retval = new string[loops + 3][];
+            string[][] retval = new string[loops + 2][];
             retval[0] = new string[] { "Running a loop on a single hopper to illustrate how repeats converge as" + 
                 "iterations increase. Line length = " + length + " ; Probability = " + probability ,
                 "_ignore_single_hop_powers_of_10_between_" + min + "_and_" + max};

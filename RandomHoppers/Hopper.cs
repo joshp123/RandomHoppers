@@ -27,7 +27,7 @@ namespace RandomHoppers
             //{
                 JaggedArrayToCSV(SingleHopLoop(0.1, 4, 50, 0.1, 0.5));
                 JaggedArrayToCSV(LoopOverPowersOfTen(1, 7.5, 1, 0.5));
-                JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.001, 50000));
+                JaggedArrayToCSV(LoopOverProbabilities(0.001, 1.00, 0.1, 50000));
             //}
             //catch (Exception)
             //{
@@ -136,7 +136,7 @@ namespace RandomHoppers
             }
             
             int loops = Convert.ToInt32((max - min) / interval) + 1;
-            string[][] retval = new string[loops + 3][];
+            string[][] retval = new string[loops + 2][];
             int iteration = 1;
             retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max +
                 " over " + iterations + " iterations" , "_ignore_multi_hop_probabilities_between_" + min + "_and_" + max};

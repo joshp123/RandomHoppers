@@ -133,7 +133,7 @@ namespace RandomHoppers
             retval[0] = new string[] { "Running a loop over probabilities between " + min + " + " + max +
                 " over " + iterations + " iterations" , "_ignore_multi_hop_probabilities_between_" + min + "_and_" + max};
             retval[1] = new string[] { "Probability", "Average hoppers on line", "Standard deviation",
-                "Average travel time", "Time taken to Calculate (ms)" };
+                "Average travel time", "Standard deviation of average travel time", "Time taken to Calculate (ms)" };
 
             for (double i = min; i < (max + interval); i += interval)
             {
@@ -158,15 +158,16 @@ namespace RandomHoppers
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                Tuple<double, double, double> stats = MultiHop(50, iterations, i);
+                Tuple<double, double, double, double> stats = MultiHop(50, iterations, i);
                 double average = stats.Item1;
                 double stdev = stats.Item2;
                 double average_travel_time = stats.Item3;
+                double stdev_traveltime = stats.Item4;
 
                 sw.Stop();
 
                 retval[iteration] = new string[] { i.ToString(), average.ToString(), stdev.ToString(),
-                    average_travel_time.ToString(), sw.ElapsedMilliseconds.ToString() };
+                    average_travel_time.ToString(), stdev_traveltime.ToString(), sw.ElapsedMilliseconds.ToString() };
             }
             return retval;
         }
@@ -339,7 +340,7 @@ namespace RandomHoppers
             return filepath;
         }
 
-        static Tuple<double,double,double> MultiHop(int length, int maxtime, double probability)
+        static Tuple<double,double,double,double> MultiHop(int length, int maxtime, double probability)
         {
             // returns average number of hoppers per line and the standard deviation as a tuple of doubles
 
@@ -461,7 +462,7 @@ namespace RandomHoppers
 
             Tuple<double, double> array_stats = AverageAndStdevOfArray(hopper_count);
 
-            return new Tuple<double, double, double>(array_stats.Item1, array_stats.Item2, average_travel_time);
+            return new Tuple<double, double, double, double>(array_stats.Item1, array_stats.Item2, average_travel_time, AverageAndStdevOfArray(travel_time).Item2);
             
         }
 
